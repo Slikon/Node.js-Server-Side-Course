@@ -1,10 +1,17 @@
-const express = require('express'), 
-            http = require('http');
+const express = require('express'), http = require('http');
+const morgan = require('morgan');
+
 
 const hostname = 'localhost';
 const port = 3000;
 
 const app = express();
+
+//use morgan for logging
+app.use(morgan('dev'))
+
+//serve static
+app.use(express.static(__dirname + '/public'))
 
 app.use((req, res, next) => {
   console.log(req.headers);
