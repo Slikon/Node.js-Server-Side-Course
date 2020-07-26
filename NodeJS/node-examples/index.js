@@ -1,6 +1,6 @@
 let rect = require('./rectangle')
 
-function solveRect(l,b) {
+let solveRect = (l,b) => {
     console.log("Solving for rectangle with l = "
                 + l + " and b = " + b);
     rect(l,b, (err,rectangle) => {
