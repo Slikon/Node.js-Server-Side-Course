@@ -1,25 +1,46 @@
 const mongoose = require('mongoose')
 
 const Dishes = require('./models/dishes')
-const { db } = require('./models/dishes')
+const {
+    db
+} = require('./models/dishes')
 
-const url ='mongodb://localhost:27017/conFusion'
-const connect = mongoose.connect(url, { useNewUrlParser: true })
+const url = 'mongodb://localhost:27017/conFusion'
+const connect = mongoose.connect(url, {
+    useNewUrlParser: true
+})
 
 connect.then((db) => {
     console.log('Succesfully connected to the server with url ' + url);
 
     Dishes.create({
-        name: 'PayVay',
-        description: 'test pizzeria'
-    })
+            name: 'PayVay',
+            description: 'test pizzeria'
+        })
         .then((dish) => {
             console.log(dish + '\tsuccesfully saved');
 
-            return Dishes.find({}).exec()
+            return Dishes.findByIdAndUpdate(dish._id, {
+                $set: { description: 'Updated test'}
+            },{
+                new: true
+            }).exec()
+            
         })
-        .then((dishes) =>{
-            console.log(dishes);
+        .then((dish) => {
+            console.log(dish);
+
+            dish.comments.push({
+                rating: 5,
+                comment: 'I\'m getting a nice feeling!',
+                author: 'Margot Robbie'
+            })
+
+            return dish.save()
+
+        })
+        .then((dish) => {
+            console.log(dish);
 
             return Dishes.remove({})
         })
