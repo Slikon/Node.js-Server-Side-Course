@@ -9,12 +9,10 @@ const connect = mongoose.connect(url, { useNewUrlParser: true })
 connect.then((db) => {
     console.log('Succesfully connected to the server with url ' + url);
 
-    let newDish = Dishes({
+    Dishes.create({
         name: 'PayVay',
         description: 'test pizzeria'
     })
-
-    newDish.save()
         .then((dish) => {
             console.log(dish + '\tsuccesfully saved');
 
