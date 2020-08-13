@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const passport = require('passport');
 
 const bodyParser = require('body-parser');
 var User = require('../models/user');
@@ -12,12 +13,12 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/signup', (req, res, next) => {
-  User.findOne({username: req.body.username})
-  .then((user) => {
-    if(user != null) {
-      var err = new Error('User ' + req.body.username + ' already exists!');
-      err.status = 403;
-      next(err);
+  User.register(new User({username: req.body.username}), 
+  req.body.password, (err, user) => {
+    if(err) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({err : err});
     }
     else {
       return User.create({
