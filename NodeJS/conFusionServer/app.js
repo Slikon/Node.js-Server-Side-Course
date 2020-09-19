@@ -7,7 +7,7 @@ var logger = require('morgan');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const passport = require('passport');
-const authenticate = require('./authenticate')
+const authenticate = require('./authenticate');
 const config = require('./config');
 
 var indexRouter = require('./routes/index');
@@ -19,18 +19,20 @@ var promoRouter = require('./routes/promoRouter');
 
 const Dishes = require('./models/dishes');
 
-const url = config.mongoUrl 
+const url = config.mongoUrl;
 
 const connect = mongoose.connect(url, {
-  useNewUrlParser: true
-})
+  useNewUrlParser: true,
+});
 
 // Database Connection
-connect.then((db) => {
-  console.log('Connected succesfully to the server!');
-}).catch((err) => {
-  console.log(err);
-});
+connect
+  .then((db) => {
+    console.log('Connected succesfully to the server!');
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 var app = express();
 
@@ -40,13 +42,15 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({
-  extended: false
-}));
+app.use(
+  express.urlencoded({
+    extended: false,
+  })
+);
 
 // app.use(cookieParser('12345-67890-09876-54321'));
 
-app.use(passport.initialize())
+app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -54,11 +58,10 @@ app.use('/users', usersRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Express routes
-app.use('/aboutus', aboutUsRouter)
-app.use('/dishes', dishRouter)
-app.use('/leaders', leaderRouter)
-app.use('/promotions', promoRouter)
-
+app.use('/aboutus', aboutUsRouter);
+app.use('/dishes', dishRouter);
+app.use('/leaders', leaderRouter);
+app.use('/promotions', promoRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
