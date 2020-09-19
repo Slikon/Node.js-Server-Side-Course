@@ -1,19 +1,38 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
 const passport = require('passport');
 const authenticate = require('../authenticate');
 
 const bodyParser = require('body-parser');
 var User = require('../models/user');
 
-router.use(bodyParser.json());
+const usersRouter = express.Router();
+
+usersRouter.use(bodyParser.json());
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
-});
+usersRouter.get(
+  '/',
+  authenticate.verifyUser,
+  authenticate.verifyAdmin,
+  (req, res, next) => {
+    User.find({})
+      .then(
+        (users) => {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json(users);
+        },
+        (err) => {
+          next(err);
+        }
+      )
+      .catch((err) => {
+        next(err);
+      });
+  }
+);
 
-router.post('/signup', (req, res, next) => {
+usersRouter.post('/signup', (req, res, next) => {
   User.register(
     new User({ username: req.body.username }),
     req.body.password,
@@ -49,7 +68,7 @@ router.post('/signup', (req, res, next) => {
   );
 });
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+usersRouter.post('/login', passport.authenticate('local'), (req, res) => {
   const token = authenticate.getToken({ _id: req.user._id });
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
@@ -60,7 +79,7 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
   });
 });
 
-router.get('/logout', (req, res) => {
+usersRouter.get('/logout', (req, res, next) => {
   if (req.session) {
     req.session.destroy();
     res.clearCookie('session-id');
@@ -72,4 +91,4 @@ router.get('/logout', (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = usersRouter;
